@@ -14,9 +14,9 @@
 
 ### EXAMPLE IMAGES
 
-![Architecture](docs/1.png)
-!(docs/2.png)
-!(docs/3.png)
-!(docs/4.png)
-!(docs/5.png)
-!(docs/6.png)
+![IMPACT](docs/1.png)
+![DONUT](docs/2.png)
+![WORDTAG](docs/3.png)
+![TABLE LIST](docs/4.png)
+![TIME SERIES](docs/5.png)
+![MAPS LEAFLET JS](docs/6.png)
