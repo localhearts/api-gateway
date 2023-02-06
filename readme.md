@@ -17,20 +17,27 @@
 ```
   elasticdump \
   --input=news_indonesia.json \
-  --output=http://127.0.0.1:9200/my_index \
+  --output=http://127.0.0.1:9200/your_index \
   --type=data
 ```
 
 
-#### GET DATA
+
+
+#### GET DATA GRAPH DASHBOARD
 
 ```
-  GET /api/news/:type/:gte/:lte/:keyword
+  GET http://127.0.0.1:4200/api/v1/news/graph/:start_date/:end_date/:keyword
+```
+```
+  EXAMPLE http://127.0.0.1:4200/api/v1/news/graph/2022-12-12/2023-02-24/*
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `type` | `string` | **Required**. Example : docs |
-| `gte` | `date` | **Required**.|
-| `lte` | `date` | **Required**.|
-| `keyword` | `string` | **Required**.|
+#### GET DATALIST
+
+```
+  GET http://127.0.0.1:4200/api/v1/news/:start_date/:end_date/:keyword
+```
+```
+  EXAMPLE http://127.0.0.1:4200/api/v1/news/2022-12-12/2023-02-24/*
+```
