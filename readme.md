@@ -5,7 +5,7 @@
 
 #### FIRST STEP DOWNLOAD ELASTICSEARCH
 
-```http
+```text
   https://www.elastic.co/downloads/past-releases/elasticsearch-6-0-0
 ```
 
