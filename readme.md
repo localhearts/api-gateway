@@ -13,7 +13,17 @@
   https://github.com/elasticsearch-dump/elasticsearch-dump
 ```
 
+#### MAPPING DATA TO ELASTICSEARCH WITH ELASTICDUMP
+
+```
+  elasticdump \
+  --input=news_indonesia_mapping.json \
+  --output=http://127.0.0.1:9200/your_index \
+  --type=mapping
+```
+
 #### UPLOAD DATA JSON TO ELASTICSEARCH WITH ELASTICDUMP
+
 ```
   elasticdump \
   --input=news_indonesia.json \

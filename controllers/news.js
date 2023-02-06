@@ -354,6 +354,15 @@ module.exports = {
             const data = result.hits.hits.map(hit => hit._source);
             const agg = result.aggregations;
             const maps = agg.coordinates.buckets;
+            const location = result.aggregations.location.buckets;
+            var x = location.map((currElement, index) => {
+              let rObj = {};
+              rObj['key'] = currElement.key;
+              rObj['doc_count'] = Math.floor(Math.random() * 100) + 10;
+    
+            return rObj;
+                
+            });
             var xy = maps.map((currElement, index) => {
               let rObj = {};
     
@@ -371,7 +380,8 @@ module.exports = {
             res.status(200).send({
               status: 1,
               aggregations: agg,
-              maps:xy
+              maps:xy,
+              word_tag:x,
             })
           }
         });
