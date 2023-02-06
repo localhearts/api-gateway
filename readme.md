@@ -5,13 +5,13 @@
 
 #### FIRST STEP DOWNLOAD ELASTICSEARCH
 
-```text
+```
   https://www.elastic.co/downloads/past-releases/elasticsearch-6-0-0
 ```
 
 #### GET DATA
 
-```http
+```
   GET /api/news/:type/:gte/:lte/:keyword
 ```
 
