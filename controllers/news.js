@@ -67,6 +67,100 @@ module.exports = {
         });
     
     },
+    maps(req, res) {
+        const esIndex = process.env.ELASTIC_INDEX;
+        const gte = req.params.start_date;
+        const lte = req.params.end_date;
+        console.log(gte);
+        const keyword = req.params.keyword;
+        const start = gte + "T00:00:00";
+        const end = lte + "T23:59:59.999";
+        client.search({
+          index: esIndex,
+          body: {
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "query_string": {
+                      "query": keyword,
+                      "analyze_wildcard": true,
+                      "default_field": "*"
+                    }
+                  },
+                  {
+                    "range": {
+                      "tgl_ambil": {
+                        "time_zone": "+07:00", 
+                        "gte": start,
+                        "lte": end
+                      }
+                    }
+                  }
+                ],
+                "must_not": [
+                  {
+                    "match_phrase": {
+                      "tokenizer": {
+                        "query": "None"
+                      }
+                    }
+                  }
+                ],
+                "should": []
+              }
+            },
+            "from": 0,
+            "size": 10,
+            "sort": [],
+            "aggs":{
+              "coordinates": {
+                "geohash_grid": {
+                  "field": "location",
+                  "precision": 12
+                },
+                "aggs": {
+                  "sales_bucket_filter": {
+                    "bucket_selector": {
+                      "buckets_path": {
+                        "doc_count": "centroid.count"
+                      },
+                      "script": "params.doc_count >= 1"
+                    }
+                  },
+                  "centroid": {
+                    "geo_centroid": {
+                      "field": "location"
+                    }
+                  }
+                }
+                
+              },
+            }
+          }
+        }, (err, result) => {
+          
+          if (err) {
+            res.status(500).send({
+              status: 2,
+              message: "Elasticsearch Timeout",
+            });
+          } else {
+            const data = result.hits.hits.map(hit => hit._source);
+            const agg = result.aggregations;
+
+    
+    
+            res.status(200).send({
+              status: 1,
+              data: x,
+            });
+    
+    
+      
+          }
+        });
+    },
     graph(req, res) {
         const esIndex = process.env.ELASTIC_INDEX;
         const keyword = req.params.keyword;
@@ -108,6 +202,28 @@ module.exports = {
               }
             }],
             "aggs": {
+                "coordinates": {
+                    "geohash_grid": {
+                      "field": "location",
+                      "precision": 12
+                    },
+                    "aggs": {
+                      "sales_bucket_filter": {
+                        "bucket_selector": {
+                          "buckets_path": {
+                            "doc_count": "centroid.count"
+                          },
+                          "script": "params.doc_count >= 1"
+                        }
+                      },
+                      "centroid": {
+                        "geo_centroid": {
+                          "field": "location"
+                        }
+                      }
+                    }
+                    
+                  },
               "impact": {
                 "filters": {
                   "filters": {
@@ -237,31 +353,25 @@ module.exports = {
           } else {
             const data = result.hits.hits.map(hit => hit._source);
             const agg = result.aggregations;
-            const location = result.aggregations.location.buckets;
-            var x = location.map((currElement, index) => {
+            const maps = agg.coordinates.buckets;
+            var xy = maps.map((currElement, index) => {
               let rObj = {};
-              rObj['key'] = currElement.key;
-              rObj['doc_count'] = Math.floor(Math.random() * 100) + 10;
     
-            return rObj;
-                
+              rObj['title'] = maps[index].doc_count;
+              rObj['latitude'] = maps[index].centroid.location ? maps[index].centroid.location.lat : "";
+              rObj['longitude'] = maps[index].centroid.location ? maps[index].centroid.location.lon : "";
+              rObj['color'] = '#900C3F';
+    
+    
+              return [''+rObj['title']+'',rObj['latitude'],rObj['longitude']];
+    
             });
-         
-            
-            // var tod = location.forEach(element => {
-            //   let rObj = {};
-            //   rObj['key'] = element.key;
-            //   rObj['doc_count'] = Math.floor(Math.random() * 100) + 10;
-    
-            
-            // return rObj;
-            // });
+        
             
             res.status(200).send({
               status: 1,
-              result: data,
               aggregations: agg,
-              lot:x
+              maps:xy
             })
           }
         });
